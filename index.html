@@ -11,7 +11,7 @@
   로컬 테스트: http://localhost 등록
 -->
 <script type="text/javascript"
-  src="//dapi.kakao.com/v2/maps/sdk.js?appkey=802acef7fda9b95266d88cf5623e2f27">
+  src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=802acef7fda9b95266d88cf5623e2f27&autoload=false">
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -547,7 +547,8 @@ function openKakao(lat,lng,name){
 
 /* ════ BOOT ════ */
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();});
-window.addEventListener('DOMContentLoaded',initMap);
+/* kakao.maps.load() : SDK가 완전히 로드된 후 콜백을 실행 (autoload=false 와 함께 사용) */
+kakao.maps.load(initMap);
 </script>
 </body>
 </html>
