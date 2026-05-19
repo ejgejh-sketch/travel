@@ -4,12 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>🌿 은주♥진규의 남도 늦봄 여행 지도</title>
-<!--
-  ★ 배포 전 필수 ★
-  developers.kakao.com → 내 애플리케이션 → 플랫폼 → Web
-  배포 도메인(예: https://내아이디.github.io) 등록 후 사용 가능
-  로컬 테스트: http://localhost 등록
--->
 <script type="text/javascript"
   src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=802acef7fda9b95266d88cf5623e2f27&autoload=false">
 </script>
@@ -22,41 +16,93 @@
   --suko:#5B5EDF;--suko-bg:#EEEFFE;
   --kkiri:#D97706;--kkiri-bg:#FFF8EE;
   --dubong:#0891B2;--dubong-bg:#E0F7FB;
+  --jjuku:#E11D8C;--jjuku-bg:#FCE7F3;
   --pw:380px;--bh:96px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 body{font-family:'Pretendard',sans-serif;background:var(--cream);color:var(--text)}
+ 
+/* ── 헤더 ── */
 #hd{position:fixed;top:0;left:0;right:0;height:52px;background:var(--g1);display:flex;align-items:center;padding:0 16px;gap:10px;z-index:1100;box-shadow:0 2px 14px rgba(0,0,0,.28)}
 #hd h1{font-family:'Pretendard',sans-serif;font-size:17px;font-weight:700;color:#fff;flex:1}
 #hd .sub{font-size:11px;color:rgba(255,255,255,.6);letter-spacing:.5px;display:none}
 @media(min-width:460px){#hd .sub{display:block}}
-#mb{position:fixed;top:52px;left:0;right:0;height:44px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:6px;z-index:1099;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.ml{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;margin-right:2px}
-.mbt{padding:5px 13px;border-radius:20px;border:1.5px solid;font-size:12px;font-weight:700;font-family:'Pretendard',sans-serif;cursor:pointer;white-space:nowrap;transition:all .2s;background:#fff}
+ 
+/* ── 모드 버튼 바 ── */
+#mb{
+  position:fixed;top:52px;left:0;right:0;height:44px;
+  background:#fff;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 12px;gap:6px;
+  z-index:1099;box-shadow:0 2px 8px rgba(0,0,0,.06);
+  overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
+}
+#mb::-webkit-scrollbar{display:none}
+.ml{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;margin-right:2px;flex-shrink:0}
+.mbt{
+  padding:5px 13px;border-radius:20px;border:1.5px solid;
+  font-size:12px;font-weight:700;font-family:'Pretendard',sans-serif;
+  cursor:pointer;white-space:nowrap;transition:all .2s;background:#fff;flex-shrink:0;
+}
 .mbt:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.14)}
-.mbt.active-all{background:var(--g2);color:#fff;border-color:var(--g2)}
-.mbt.active-suko{background:var(--suko);color:#fff;border-color:var(--suko)}
-.mbt.active-kkiri{background:var(--kkiri);color:#fff;border-color:var(--kkiri)}
+.mbt.active-all   {background:var(--g2);   color:#fff;border-color:var(--g2)}
+.mbt.active-jjuku {background:var(--jjuku);color:#fff;border-color:var(--jjuku)}
+.mbt.active-suko  {background:var(--suko); color:#fff;border-color:var(--suko)}
+.mbt.active-kkiri {background:var(--kkiri);color:#fff;border-color:var(--kkiri)}
 .mbt.active-dubong{background:var(--dubong);color:#fff;border-color:var(--dubong)}
 .mbt.inactive{color:var(--muted);border-color:var(--border)}
+ 
+/* 쮸뀨미픽 버튼 강조 */
+#btn-jjuku{
+  border-style:solid;
+  box-shadow:0 0 0 1.5px var(--jjuku);
+  position:relative;
+}
+#btn-jjuku::before{
+  content:'NEW';
+  position:absolute;top:-8px;right:-6px;
+  background:var(--jjuku);color:#fff;
+  font-size:8px;font-weight:900;letter-spacing:.5px;
+  padding:1px 5px;border-radius:6px;
+}
+#btn-jjuku.active-jjuku::before{display:none}
+ 
+/* ── 지도 컨테이너 ── */
 #mw{position:fixed;top:var(--bh);left:0;right:0;bottom:0;z-index:1;transition:right .35s cubic-bezier(.25,.46,.45,.94)}
 #mw.po{right:var(--pw)}
 #map{width:100%;height:100%}
+ 
+/* ── 루트 배너 ── */
 #rb{display:none;position:absolute;top:0;left:0;right:0;padding:8px 16px;z-index:500;font-size:13px;font-weight:700;align-items:center;gap:8px;backdrop-filter:blur(6px)}
 #rb.sm{background:rgba(91,94,223,.88);color:#fff}
 #rb.km{background:rgba(217,119,6,.88);color:#fff}
 #rb.dm{background:rgba(8,145,178,.88);color:#fff}
+#rb.jm{background:rgba(225,29,140,.92);color:#fff}
 #rb .yl{margin-left:auto;font-size:11px;opacity:.85;color:inherit;text-decoration:none;border:1px solid rgba(255,255,255,.4);padding:3px 10px;border-radius:12px;white-space:nowrap}
-#leg{position:absolute;top:12px;right:12px;z-index:490;background:rgba(255,255,255,.97);border-radius:14px;padding:14px 15px;box-shadow:0 4px 20px rgba(0,0,0,.13);min-width:152px;backdrop-filter:blur(10px)}
+ 
+/* ── 범례 박스 ── */
+#leg{position:absolute;top:12px;right:12px;z-index:490;background:rgba(255,255,255,.97);border-radius:14px;padding:14px 15px;box-shadow:0 4px 20px rgba(0,0,0,.13);min-width:160px;backdrop-filter:blur(10px)}
 .lt{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 .li{display:flex;align-items:center;gap:8px;padding:4px 5px;border-radius:7px;cursor:pointer;font-size:12px;transition:all .15s}
 .li:hover{background:var(--warm)}
 .li.off{opacity:.3}
 .ld{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.li-day{display:flex;align-items:center;gap:8px;padding:5px 5px;border-radius:7px;font-size:12px;font-weight:600}
+.ld-sq{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+.day-conn{display:flex;align-items:center;gap:6px;padding:3px 5px;font-size:10px;color:var(--muted)}
+.day-conn-line{flex:1;height:1px;border-top:1.5px dashed #94A3B8}
+ 
+/* ── 사이드 패널 ── */
 #pn{position:fixed;background:#fff;z-index:1200;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.25,.46,.45,.94)}
-@media(min-width:769px){#pn{top:var(--bh);right:0;width:var(--pw);bottom:0;border-left:1px solid var(--border);box-shadow:-6px 0 30px rgba(0,0,0,.1);transform:translateX(100%)}#pn.open{transform:translateX(0)}}
-@media(max-width:768px){#pn{left:0;right:0;bottom:0;height:78vh;border-top-left-radius:22px;border-top-right-radius:22px;border-top:1px solid var(--border);box-shadow:0 -10px 40px rgba(0,0,0,.18);transform:translateY(100%)}#pn.open{transform:translateY(0)}#pn::before{content:'';display:block;flex-shrink:0;width:44px;height:4px;border-radius:2px;background:var(--border);margin:12px auto 0}}
+@media(min-width:769px){
+  #pn{top:var(--bh);right:0;width:var(--pw);bottom:0;border-left:1px solid var(--border);box-shadow:-6px 0 30px rgba(0,0,0,.1);transform:translateX(100%)}
+  #pn.open{transform:translateX(0)}
+}
+@media(max-width:768px){
+  #pn{left:0;right:0;bottom:0;height:78vh;border-top-left-radius:22px;border-top-right-radius:22px;border-top:1px solid var(--border);box-shadow:0 -10px 40px rgba(0,0,0,.18);transform:translateY(100%)}
+  #pn.open{transform:translateY(0)}
+  #pn::before{content:'';display:block;flex-shrink:0;width:44px;height:4px;border-radius:2px;background:var(--border);margin:12px auto 0}
+}
 .pa{height:4px;flex-shrink:0}
 .ph{padding:18px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0;position:relative}
 .pb-badge{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
@@ -72,43 +118,49 @@ body{font-family:'Pretendard',sans-serif;background:var(--cream);color:var(--tex
 .tip-card{background:#FFFCF2;border-left:3px solid var(--kkiri);border-radius:0 10px 10px 0;padding:11px 14px;font-size:13px;line-height:1.65;color:#78400A}
 .vc{background:var(--suko-bg);border-left:3px solid var(--suko);border-radius:0 10px 10px 0;padding:11px 14px}
 .vl{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--suko);margin-bottom:6px}
-.vt{font-size:13px;line-height:1.65;color:var(--text)}
+.vt{font-size:13px;line-height:1.65;color:var(--text);white-space:pre-line}
 .kbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;margin-top:20px;background:#FEE500;color:#191600;border:none;border-radius:12px;font-size:14px;font-weight:800;font-family:'Pretendard',sans-serif;cursor:pointer;transition:all .2s}
 .kbtn:hover{background:#FFD700;transform:translateY(-1px);box-shadow:0 4px 16px rgba(254,229,0,.5)}
 .kbtn:active{transform:none}
+ 
+/* ── 배경 오버레이 ── */
 #bd{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:1150;backdrop-filter:blur(2px)}
 #bd.show{display:block}
+ 
+/* ── 에러 화면 ── */
 #err{display:none;position:fixed;inset:0;background:rgba(255,255,255,.97);z-index:9999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
 #err h2{font-family:'Pretendard',sans-serif;font-size:20px;margin-bottom:12px;color:var(--g1)}
 #err p{font-size:14px;color:var(--muted);line-height:1.8;max-width:440px}
 #err code{background:#F5F1EB;padding:2px 8px;border-radius:4px;font-size:13px;font-weight:700;color:var(--g2)}
+ 
 @media(max-width:460px){#hd h1{font-size:14px}.mbt{padding:5px 10px;font-size:11px}.ml{display:none}}
 </style>
 </head>
 <body>
-
+ 
 <header id="hd">
   <h1>🌿 은주♥진규의 남도 늦봄 여행 지도</h1>
   <span class="sub">보성 · 순천 · 고흥 · 여수</span>
 </header>
-
+ 
 <nav id="mb">
   <span class="ml">지도 모드</span>
-  <button class="mbt active-all" id="btn-all"   onclick="switchMode('all')">🗺️ 전체 추천</button>
-  <button class="mbt inactive"   id="btn-suko"  onclick="switchMode('suko')">📺 수코 루트</button>
-  <button class="mbt inactive"   id="btn-kkiri" onclick="switchMode('kkiri')">📺 끼리 루트</button>
-  <button class="mbt inactive"   id="btn-dubong" onclick="switchMode('dubong')">📺 드봉 루트</button>
+  <button class="mbt inactive"    id="btn-jjuku"  onclick="switchMode('jjuku')">💑 쮸뀨미픽</button>
+  <button class="mbt active-all"  id="btn-all"    onclick="switchMode('all')">🗺️ 전체 추천</button>
+  <button class="mbt inactive"    id="btn-suko"   onclick="switchMode('suko')">📺 수코 루트</button>
+  <button class="mbt inactive"    id="btn-kkiri"  onclick="switchMode('kkiri')">📺 끼리 루트</button>
+  <button class="mbt inactive"    id="btn-dubong" onclick="switchMode('dubong')">📺 드봉 루트</button>
 </nav>
-
+ 
 <div id="mw">
   <div id="map"></div>
   <div id="rb"></div>
   <div id="leg"></div>
 </div>
-
+ 
 <div id="pn"></div>
 <div id="bd" onclick="closePanel()"></div>
-
+ 
 <div id="err">
   <h2>🗺️ 지도를 불러오지 못했어요</h2>
   <p>
@@ -116,14 +168,16 @@ body{font-family:'Pretendard',sans-serif;background:var(--cream);color:var(--tex
     <a href="https://developers.kakao.com" target="_blank"><strong>developers.kakao.com</strong></a> 접속<br>
     1. <strong>내 애플리케이션 → 플랫폼 → Web</strong> 에<br>
        현재 주소 <code id="cur-domain"></code> 를 등록해 주세요.<br>
-    2. <strong>내 애플리케이션 → 앱 설정 → 카카오맵</strong> (또는 지도/로컬) 메뉴에서<br>
+    2. <strong>내 애플리케이션 → 앱 설정 → 카카오맵</strong> 메뉴에서<br>
        <strong>활성화 설정 상태를 'ON'</strong>으로 변경해 주세요.<br><br>
     <span style="font-size:12px;opacity:.7">등록 후 페이지를 새로고침하면 지도가 열립니다.</span>
   </p>
 </div>
-
+ 
 <script>
-/* ════ 1. CATEGORIES ════ */
+/* ════════════════════════════════════════
+   1. 카테고리 정의
+════════════════════════════════════════ */
 const CAT={
   tour:    {name:'🏞 관광지',       color:'#3B82F6',emoji:'🏞'},
   flower:  {name:'🌸 꽃 군락지',    color:'#EC4899',emoji:'🌸'},
@@ -134,10 +188,22 @@ const CAT={
   food:    {name:'🍽 지역 미식',    color:'#DC2626',emoji:'🍽'},
   market:  {name:'🧺 전통시장',     color:'#EA580C',emoji:'🧺'}
 };
-
-/* ════ 2. PLACE DATA (검증 완료) ════ */
+ 
+/* ════════════════════════════════════════
+   2. 쮸뀨미픽 일차별 색상 정의
+════════════════════════════════════════ */
+const JJUKU_DAY={
+  1:{bg:'#10B981',tc:'#fff',label:'Day 1 · 보성',icon:'🌿'},
+  2:{bg:'#0EA5E9',tc:'#fff',label:'Day 2 · 보성→순천',icon:'🚗'},
+  3:{bg:'#8B5CF6',tc:'#fff',label:'Day 3 · 순천 시내',icon:'🌆'},
+  4:{bg:'#F59E0B',tc:'#fff',label:'Day 4 · 마무리',icon:'🏠'}
+};
+ 
+/* ════════════════════════════════════════
+   3. 전체 추천 장소 데이터
+════════════════════════════════════════ */
 const PLACES=[
-  // 순천
+  // ── 순천 ──
   {id:'sc01',name:'순천만국가정원',region:'순천',cat:'flower',lat:34.9284,lng:127.4983,
    addr:'전남 순천시 국가정원1호길 47',
    reason:'5월 말이 장미 절정기. 70개국 220품종 1만5천 그루의 장미가 한꺼번에 만개. 외국 정원 분위기 물씬.',
@@ -178,7 +244,7 @@ const PLACES=[
    addr:'전남 순천시 강변로 435',
    reason:'무인궤도차(PRT). 국가정원↔습지 구간 하늘 위로 이동하는 특별 체험.',
    tip:'월요일 휴무. 10:00~18:00 운행. 국가정원 입장권과 별도 요금.'},
-  // 보성
+  // ── 보성 ──
   {id:'bs01',name:'대한다원 (보성녹차밭)',region:'보성',cat:'tour',lat:34.7161,lng:127.0781,
    addr:'전남 보성군 보성읍 녹차로 763-65',
    reason:'삼나무 가로수길+계단식 차밭. 5월 신록이 가장 빛나는 시기. 영화·드라마 촬영지.',
@@ -186,7 +252,7 @@ const PLACES=[
   {id:'bs02',name:'한국차문화공원 (봇재)',region:'보성',cat:'tour',lat:34.7195,lng:127.0818,
    addr:'전남 보성군 보성읍 녹차로 775',
    reason:'차밭 파노라마 전망대. 다도(茶道) 체험 프로그램 운영. 대한다원에서 차로 5분.',
-   tip:'봇재 다도 체험 예약 권장. 한국차문화박물관 관람 포함. 주차 무료.'},
+   tip:'봇재 다도 체험 예약 권장(061-850-5959). 한국차문화박물관 관람 포함. 주차 무료.'},
   {id:'bs03',name:'율포솔밭해수욕장',region:'보성',cat:'tour',lat:34.6711,lng:127.0886,
    addr:'전남 보성군 회천면 우암길 21 (율포해수녹차센터 기준)',
    reason:'100년 해송 솔숲+해수녹차탕(녹차 온천). 솔향과 갯내음이 섞이는 늦봄의 미장센.',
@@ -204,13 +270,13 @@ const PLACES=[
    reason:'5월 신록 터널+국내 유일 티베트박물관. 만다라·탕카 전시. 고요한 산사 분위기.',
    tip:'사찰 앞 무료 주차장. 티베트박물관 운영 시간 사전 확인 권장.'},
   {id:'bs07',name:'초록잎이 펼치는 세상',region:'보성',cat:'cafe',lat:34.7066,lng:127.0905,
-   addr:'전남 보성군 회천면 영천리 일대 (네이버지도 이름 검색)',
+   addr:'전남 보성군 회천면 영천리 산26',
    reason:'통창 너머 끝없는 차밭 뷰가 액자 그 자체. 녹차 아이스크림·녹차 라떼 시그니처.',
    tip:'10:00~18:00 영업. 개인 운영으로 오픈 시간 변동 가능. 방문 전 확인 권장.'},
-  {id:'bs08',name:'춘운서옥 (한옥 북카페)',region:'보성',cat:'cafe',lat:34.7670,lng:127.0817,
+  {id:'bs08',name:'춘운서옥 (한옥 북카페)',region:'보성',cat:'cafe',lat:34.7745,lng:127.0830,
    addr:'전남 보성군 보성읍 보성리 291-3',
    reason:'한옥 북카페. 마당 연못과 툇마루. 책 읽기 좋은 정적이고 아늑한 분위기.',
-   tip:'주차는 인근 공영주차장 이용 권장.'},
+   tip:'10:30~20:00 영업. 주차는 인근 공영주차장 이용 권장.'},
   {id:'bs09',name:'벌교 5일장',region:'보성',cat:'market',lat:34.8448,lng:127.3454,
    addr:'전남 보성군 벌교읍 회정리 일대 (벌교역 인근)',
    reason:'소설 태백산맥 배경 전통 시장. 5/24(일) 장날! 꼬막 산지 직거래 절호의 기회.',
@@ -218,8 +284,8 @@ const PLACES=[
   {id:'bs10',name:'봇재 다도(茶道) 체험',region:'보성',cat:'activity',lat:34.7195,lng:127.0818,
    addr:'전남 보성군 보성읍 녹차로 775 (한국차문화공원 내)',
    reason:'차밭 배경으로 직접 차를 우려 마시는 다례 체험 30분 코스. 늦봄에 가장 운치 있음.',
-   tip:'예약 권장. 한국차문화공원 내 위치. 봇재 전망대와 함께 관람.'},
-  // 고흥
+   tip:'예약 권장(061-850-5959). 한국차문화공원 내 위치. 봇재 전망대와 함께 관람.'},
+  // ── 고흥 ──
   {id:'gh01',name:'쑥섬 (애도) — 야생화 비밀정원',region:'고흥',cat:'flower',lat:34.4496,lng:127.5034,
    addr:'전남 고흥군 봉래면 신금리 (나로도항 공영주차장 → 도선 5분)',
    reason:'5월 야생화 비밀정원. 산수국·금계국·야생백합·은방울꽃이 동시 만개. 한국 최고 수준.',
@@ -248,7 +314,7 @@ const PLACES=[
    addr:'전남 고흥군 봉래면 신금리 일대',
    reason:'5/22(금) 장날! 쑥섬 가는 나로도항 길목에 위치. 해산물·곱창전골 명물.',
    tip:'끝자리 2·7일 장날. 새벽부터 오후 1시 파장.'},
-  // 여수
+  // ── 여수 ──
   {id:'ys01',name:'하화도 (꽃섬)',region:'여수',cat:'flower',lat:34.5934,lng:127.6178,
    addr:'전남 여수시 화정면 아래꽃섬2길 2-9 (백야도 선착장 → 여객선)',
    reason:'5월 섬 전체가 야생화로 덮임. 봄까치꽃·금계국·해당화·갯메꽃 군락.',
@@ -278,9 +344,127 @@ const PLACES=[
    reason:'돌산대교와 여수 시내 야경을 가장 잘 볼 수 있는 전망대. 일몰+야경 최강 뷰포인트.',
    tip:'24시간 개방. 주차장 있음. 해상케이블카와 동선 연계 추천.'}
 ];
-
-/* ════ 3. ROUTE DATA ════ */
+ 
+/* ════════════════════════════════════════
+   4. 루트 데이터 (유튜버 3개 + 쮸뀨미픽 1개)
+════════════════════════════════════════ */
 const ROUTES={
+  /* ── 쮸뀨미픽 3박4일 여행 동선 ── */
+  jjuku:{
+    label:'쮸뀨미픽',color:'#E11D8C',tc:'#FFFFFF',videoUrl:'',
+    places:[
+      /* ═ Day 1 (5/22 금) · 보성 ═ */
+      {order:1,day:1,name:'보성녹차떡갈비원조',lat:34.7658,lng:127.0897,
+       addr:'전남 보성군 보성읍 흥성로 2541-4',
+       video:'🗓 1일차 (5/22 금) · 점심 🍽\n보성 녹돈+한우 떡갈비 전문. 봇재 부근 위치.\n⏰ 매일 10:30-19:30 (1·3번째 월 휴무)',
+       tip:'서울 07:00 출발 → 정안알밤휴게소 09:30 경유 → 12:15 도착 목표.'},
+      {order:2,day:1,name:'춘운서옥',lat:34.7745,lng:127.0830,
+       addr:'전남 보성군 보성읍 보성리 291-3',
+       video:'🗓 1일차 (5/22 금) · 카페 ☕\n마당 연못 한옥 북카페. 녹차·초콜릿 케이크 시그니처.\n⏰ 매일 10:30-20:00',
+       tip:'식사 후 도보권. 30분 산책 + 굿즈·도자기 다기 구경.'},
+      {order:3,day:1,name:'대한다원',lat:34.7161,lng:127.0781,
+       addr:'전남 보성군 보성읍 녹차로 763-65',
+       video:'🗓 1일차 (5/22 금) · 관광지 🌿\n입장료 4,000원. 삼나무 가로수길→본밭 전망대 코스. 2시간 권장.\n⏰ 09:00-18:00',
+       tip:'2주차장(소형) 추천. 흰색·아이보리 옷이 초록과 최고 조합.'},
+      {order:4,day:1,name:'봇재 다도체험',lat:34.7195,lng:127.0818,
+       addr:'전남 보성군 보성읍 녹차로 775',
+       video:'🗓 1일차 (5/22 금) · 이색 체험 🍵\n차밭 파노라마 전망대 + 30분 다례 체험.\n도자기 다기 구경 가능. ☎ 061-850-5959',
+       tip:'대한다원에서 차로 5분. 예약 권장. 주차 무료.'},
+      {order:5,day:1,name:'초록잎이 펼치는 세상',lat:34.7066,lng:127.0905,
+       addr:'전남 보성군 회천면 영천리 산26',
+       video:'🗓 1일차 (5/22 금) · 카페 ☕\n통창 차밭뷰 카페. 녹차 아이스크림·녹차 라떼 시그니처.\n⏰ 매일 10:00-18:00 ★마감 주의',
+       tip:'18:00 전 입장 필수. 펜션과 같은 영천리 동네.'},
+      {order:6,day:1,name:'율포솔밭해수욕장',lat:34.6711,lng:127.0886,
+       addr:'전남 보성군 회천면 우암길 21',
+       video:'🗓 1일차 (5/22 금) · 일몰 🌅\n5/22 일몰 19:25. 100년 해송 솔숲+은빛 모래.\n손하트 조각상 포토스팟.',
+       tip:'19:00 전 도착 목표. 솔숲 옆 무료 주차장.'},
+      {order:7,day:1,name:'보성농협 하나로마트',lat:34.7675,lng:127.0828,
+       addr:'전남 보성군 보성읍 현충로 92-32',
+       video:'🗓 1일차 (5/22 금) · 장보기 🛒\n바베큐 식재료 구입.\n⏰ 매일 08:00-21:00',
+       tip:'신선 농수산물 구비. 맥주·고기·채소 한 번에 픽업.'},
+      {order:8,day:1,name:'영천한옥펜션 (1박)',lat:34.7075,lng:127.0890,
+       addr:'전남 보성군 영천길 43-2',
+       video:'🗓 1일차 (5/22 금) · 숙소 🏡\n바베큐 + 취침.\n⏰ 22:00 취침',
+       tip:'체크인 후 바베큐 준비. 다음날 11:00 체크아웃.'},
+      /* ═ Day 2 (5/23 토) · 보성→순천 ═ */
+      {order:9,day:2,name:'나눌터',lat:34.9326,lng:127.5141,
+       addr:'전남 순천시 연향동 1673-3',
+       video:'🗓 2일차 (5/23 토) · 점심 🍽\n도토리묵·재첩비빔국수 전문.\n⏰ 매일 11:00-15:30 / 17:00-21:00 ★목요일 휴무',
+       tip:'11:00 정각 캐치테이블 원격 줄서기 필수! 주말 웨이팅 1시간+'},
+      {order:10,day:2,name:'조훈모과자점 팔마점',lat:34.9370,lng:127.5133,
+       addr:'전남 순천시 팔마로 269',
+       video:'🗓 2일차 (5/23 토) · 빵 포장 🥖\n순천 빵지순례 필수. 야식·다음날 아침용으로 픽업.\n⏰ 매일 09:00-22:00',
+       tip:'나눌터에서 도보 5분. 전국 최고 수준 파티시에 운영.'},
+      {order:11,day:2,name:'순천만국가정원',lat:34.9284,lng:127.4983,
+       addr:'전남 순천시 국가정원1호길 47',
+       video:'🗓 2일차 (5/23 토) · 관광지 🌸\n5월 말 장미원 절정! 3시간 권장.\n동문→장미원→호수정원→스카이큐브 정원역 코스.',
+       tip:'토요일 14:00 전 동문 주차장 입차 권장.'},
+      {order:12,day:2,name:'스카이큐브 정원역',lat:34.9267,lng:127.5019,
+       addr:'전남 순천시 강변로 435',
+       video:'🗓 2일차 (5/23 토) · 액티비티 🚝\n무인 PRT 모노레일. 국가정원→순천만습지 편도.\n⏰ ★월요일 휴무 (토요일 OK)',
+       tip:'차는 동문 주차장에 두고 편도 탑승. 운전 부담↓'},
+      {order:13,day:2,name:'순천만습지',lat:34.8860,lng:127.5090,
+       addr:'전남 순천시 순천만길 513-25',
+       video:'🗓 2일차 (5/23 토) · 일몰 🌾\n5/23 일몰 19:26. 청록빛 갈대+S자 수로.\n★월요일 휴무',
+       tip:'18:40 전 용산전망대 도착 목표. 복귀: 셔틀버스/택시로 동문 주차장.'},
+      {order:14,day:2,name:'풍미통닭 (야식 포장)',lat:34.9325,lng:127.5141,
+       addr:'전남 순천시 팔마1길 2',
+       video:'🗓 2일차 (5/23 토) · 야식 🍗\n마늘통닭 시그니처. 맥주와 함께 숙소 야식.\n⏰ 매일 11:30-24:00',
+       tip:'숙소 체크인 후 포장 주문. 맥주 미리 구입 추천.'},
+      {order:15,day:2,name:'순천만그리고나 스파펜션 (2박)',lat:34.8950,lng:127.5010,
+       addr:'전남 순천시 동너리길 14',
+       video:'🗓 2일차 (5/23 토) · 숙소 🏨\n스파펜션. 야식 + 스파 + 취침.\n⏰ 22:00 취침',
+       tip:'순천만습지 차로 5분 거리.'},
+      /* ═ Day 3 (5/24 일) · 순천 시내 ═ */
+      {order:16,day:3,name:'건봉국밥',lat:34.9457,lng:127.4940,
+       addr:'전남 순천시 장평로 65',
+       video:'🗓 3일차 (5/24 일) · 점심 🍲\n깔끔한 돼지국밥+수육. 현지인 맛집.\n⏰ 매일 07:00-21:00',
+       tip:'체크아웃 후 첫 끼. 순천 로컬 국밥 경험.'},
+      {order:17,day:3,name:'버건디클럽',lat:34.9522,lng:127.4817,
+       addr:'전남 순천시 저전동 121-6',
+       video:'🗓 3일차 (5/24 일) · 카페 ☕\n빈티지 무드 감성 카페. 30대 커플 사진 명소.',
+       tip:'점심 후 도보 이동 가능권. 1시간 여유롭게 체류.'},
+      {order:18,day:3,name:'올띵스그로우',lat:34.9540,lng:127.4806,
+       addr:'전남 순천시 금옥길 30 인근',
+       video:'🗓 3일차 (5/24 일) · 소품샵 🌱\n식물·도자기·라이프스타일 소품.\n★ 도자기 좋아하면 무조건 ★',
+       tip:'구디스파이 바로 앞. 한 곳 주차로 두 군데 동시에 OK.'},
+      {order:19,day:3,name:'구디스파이',lat:34.9538,lng:127.4802,
+       addr:'전남 순천시 금옥길 30',
+       video:'🗓 3일차 (5/24 일) · 카페 🥧\n홈메이드 파이 전문. 체스넛파이·에그파이 시그니처.\n⏰ 매일 11:00-21:00',
+       tip:'올띵스그로우 도보 1분. 같은 구역 주차 이용.'},
+      {order:20,day:3,name:'인별호텔 (체크인)',lat:34.9466,lng:127.4988,
+       addr:'전남 순천시 역전1길 22',
+       video:'🗓 3일차 (5/24 일) · 숙소 🏨\n17:00 체크인 후 1시간 30분 휴식.\n⏰ 브루웍스 바로 옆 위치.',
+       tip:'짐 보관 가능 여부 사전 전화 확인.'},
+      {order:21,day:3,name:'술벗상회',lat:34.9548,lng:127.5181,
+       addr:'전남 순천시 유동1길 29-14',
+       video:'🗓 3일차 (5/24 일) · 저녁 🍣\n숙성회+해물크림파스탕. 30대 커플 분위기 ★\n⏰ ★월요일 휴무 (일요일 OK)',
+       tip:'오픈 전 이름 써두기 추천. 바 테이블 서비스 제공.'},
+      {order:22,day:3,name:'브루웍스',lat:34.9473,lng:127.4984,
+       addr:'전남 순천시 역전2길 61',
+       video:'🗓 3일차 (5/24 일) · 카페&바 🍺\n양곡창고 개조 빈티지. 수제맥주+커피.\n⏰ 매일 10:00-22:00',
+       tip:'인별호텔 바로 옆. 저녁 식사 후 20:00 방문. 걸어서 귀가.'},
+      /* ═ Day 4 (5/25 월) · 순천 마무리 ═ */
+      {order:23,day:4,name:'오천그린광장',lat:34.9335,lng:127.4979,
+       addr:'전남 순천시 오천동 709-5',
+       video:'🗓 4일차 (5/25 월) · 산책 🌳\n동천변 잔디 피크닉 명소. 30분 가볍게 산책.',
+       tip:'체크아웃 후 가벼운 마무리 산책.'},
+      {order:24,day:4,name:'만석국밥',lat:34.9458,lng:127.4999,
+       addr:'전남 순천시 팔마로 106',
+       video:'🗓 4일차 (5/25 월) · 점심 🍚\n콩나물국밥 7,000원. 순천역 도보 3분.\n⏰ 매일 11:00-21:00 ★무휴',
+       tip:'귀가 전 마지막 식사. 가성비 최고.'},
+      {order:25,day:4,name:'순천 청춘창고',lat:34.9480,lng:127.4988,
+       addr:'전남 순천시 조곡동 720-5',
+       video:'🗓 4일차 (5/25 월) · 소품샵 🛍\n핸드메이드 브랜드 20+. 도자기·가죽·향초.\n⏰ 매일 11:30-21:00 (수요일 휴무, 월요일 OK)',
+       tip:'마지막 쇼핑. 트렁크 짐 정리 후 출발.'},
+      {order:26,day:4,name:'아쟈에노',lat:34.9503,lng:127.4856,
+       addr:'전남 순천시 중앙3길 5',
+       video:'🗓 4일차 (5/25 월) · 마지막 카페 ☕\n무화과 바스크 치즈케이크 시그니처.\n⏰ 매일 12:00-22:00 ★무휴',
+       tip:'테이크아웃 후 15:00 서울 출발. 20:00 도착 예정.'}
+    ]
+  },
+ 
+  /* ── 수코 루트 ── */
   suko:{
     label:'수코',color:'#5B5EDF',tc:'#FFFFFF',
     videoUrl:'https://www.youtube.com/watch?v=f2q2Yp1u9wA',
@@ -293,8 +477,8 @@ const ROUTES={
        addr:'전남 순천시 동외동 202-4 일대 (웃장 국밥 골목)',
        video:'오일장 구경 후 인근 웃장 국밥 골목에서 뜨끈한 국밥 식사. 영상 제목에 "국밥"이 직접 명시될 만큼 감동적인 한 끼.',
        tip:'현지인 추천 순복국밥 인기. 줄이 길어도 회전율 빠름.'},
-      {order:3,name:'나눌터',lat:34.8923,lng:127.5190,
-       addr:'전남 순천시 팔마1길 4 (연향동)',
+      {order:3,name:'나눌터',lat:34.9326,lng:127.5141,
+       addr:'전남 순천시 연향동 1673-3',
        video:'영상 제목에 "나눌터 맛있다"를 직접 넣을 만큼 강력 추천. 도토리 임자탕(들깨 수제비)·묵무침 코스 시식. MBC 위대한 일터 방영.',
        tip:'목요일 정기휴무. 주말 웨이팅 1시간+. 캐치테이블·테이블링 앱 예약 필수.'},
       {order:4,name:'동천 산책로',lat:34.9335,lng:127.4979,
@@ -313,26 +497,28 @@ const ROUTES={
        addr:'전남 순천시 순천만길 513-25',
        video:'"갈대 제일 이쁠때 가셨네요"라는 시청자 댓글 다수. 가을 황금빛 갈대밭 산책. S자 수로와 용산전망대까지 트레킹.',
        tip:'월요일 휴무. 용산전망대 일몰 하이라이트. 운동화 착용.'},
-      {order:8,name:'풍미통닭',lat:34.8925,lng:127.5188,
-       addr:'전남 순천시 팔마1길 2 (이전 후 새 주소)',
+      {order:8,name:'풍미통닭',lat:34.9325,lng:127.5141,
+       addr:'전남 순천시 팔마1길 2',
        video:'영상 제목에 "마늘통닭에 치맥" 명시. 1984년 오픈 마늘통닭 원조집. 가마솥 통째 튀김+마늘 기름장+묵은지 조합이 핵심.',
        tip:'백종원 3대 천왕·백년가게 선정. 연중무휴 11:30~24:00. 테이블링 예약 가능.'}
     ]
   },
+ 
+  /* ── 끼리 루트 ── */
   kkiri:{
     label:'끼리',color:'#D97706',tc:'#FFFFFF',
     videoUrl:'https://www.youtube.com/watch?v=jXxcCsqwblA',
     places:[
-      {order:1,name:'나눌터',lat:34.8923,lng:127.5190,
-       addr:'전남 순천시 팔마1길 4 (연향동)',
+      {order:1,name:'나눌터',lat:34.9326,lng:127.5141,
+       addr:'전남 순천시 연향동 1673-3',
        video:'꼬막 정식 먹으러 순천에 왔다가 1순위로 방문. 임자탕에 완전히 빠짐. "계속 생각나요 임자탕...추천 감삼다"는 끼리 본인 후기. 끼랑님과 커플 방문.',
        tip:'목요일 정기휴무. 웨이팅 많음. 캐치테이블·테이블링 앱 예약 필수. 다람쥐 세트 추천.'},
       {order:2,name:'순천만국가정원',lat:34.9284,lng:127.4983,
        addr:'전남 순천시 국가정원1호길 47',
        video:'5월 봄 정원 방문. "모르고 보면 외국 느낌 낭낭"이라는 시청자 반응 다수. 봄꽃 만개 시기에 끼랑님과 커플 산책.',
        tip:'5월은 장미 절정. 동문 주차 추천. 스카이큐브 탑승 이동도 특별한 경험.'},
-      {order:3,name:'구디스파이',lat:34.9510,lng:127.4920,
-       addr:'전남 순천시 금옥길 30 (본점) / 풍덕새길 28 (오천점)',
+      {order:3,name:'구디스파이',lat:34.9538,lng:127.4802,
+       addr:'전남 순천시 금옥길 30',
        video:'영상 제목에 명시된 수제 파이 카페. 보늬밤파이(베스트)·에그파이·벌교 생딸기파이 등 현장 구매. 시청자 후기 다수.',
        tip:'파이 조기 품절 많으니 오전 방문 권장. 답례품·선물용으로도 인기.'},
       {order:4,name:'참숯닭구이 (순천만닭구이)',lat:34.8200,lng:127.5300,
@@ -341,6 +527,8 @@ const ROUTES={
        tip:'순천 8미 중 하나. 주문 즉시 잡은 토종닭. 10:00~22:00. 사전 예약 권장.'}
     ]
   },
+ 
+  /* ── 드봉 루트 ── */
   dubong:{
     label:'드봉',color:'#0891B2',tc:'#FFFFFF',
     videoUrl:'https://www.youtube.com/watch?v=-r1dJY76iqs',
@@ -353,11 +541,11 @@ const ROUTES={
        addr:'전라남도 보성군 회천면 녹차로 613 (초록잎이펼치는세상 카페 인근)',
        video:'바다와 영천저수지, 마을이 한눈에 내려다보이는 무료 녹차밭. 밭 한가운데 빨간 풍차가 있어 사진 찍기 좋은 포토스팟. 입장료 없이 감상 가능.',
        tip:'초록잎이펼치는세상 카페 또는 보성 차밭 전망대 주차장 이용 후 도보로 이동. 날씨 맑은 날 방문 추천.'},
-      {order:3,name:'보성 떡갈비 맛집',lat:34.7679,lng:127.0782,
+      {order:3,name:'보성 떡갈비 맛집',lat:34.7658,lng:127.0897,
        addr:'전라남도 보성군 보성읍 흥성로 2541-4',
        video:'녹차 먹인 고기로 만든 입에서 녹는 보성 떡갈비와 푸짐한 밑반찬. 영상에서 드봉이 극찬한 보성 대표 먹거리. 육즙이 살아있는 촉촉한 식감.',
        tip:'보성 떡갈비는 보성 지역 특산물. 대부분 식당이 점심 위주 운영. 11:00~14:00 집중 방문 권장. 현금 선호.'},
-      {order:4,name:'한옥카페 춘운서옥',lat:34.7670,lng:127.0817,
+      {order:4,name:'한옥카페 춘운서옥',lat:34.7745,lng:127.0830,
        addr:'전라남도 보성군 보성읍 송재로 211-9',
        video:'100년 이상 된 한옥을 개조한 감성 카페. 정원 한쪽에 동굴 공간이 있는 것이 특징. 고즈넉한 분위기에서 즐기는 전통 음료와 디저트.',
        tip:'한옥 특성상 계절마다 분위기가 달라짐. 마당과 동굴 공간 방문 필수. 주차는 인근 공영주차장 이용.'},
@@ -372,14 +560,18 @@ const ROUTES={
     ]
   }
 };
-
-/* ════ 4. STATE ════ */
-let map,mode='all';
+ 
+/* ════════════════════════════════════════
+   5. 상태값
+════════════════════════════════════════ */
+let map, mode='all';
 let catLayers={};
-let routeMarkers=[],routePolyline=null;
+let routeMarkers=[], routePolylines=[];
 let activeCats=new Set(Object.keys(CAT));
-
-/* ════ 5. ICON FACTORIES ════ */
+ 
+/* ════════════════════════════════════════
+   6. 아이콘 생성 함수
+════════════════════════════════════════ */
 function makeCatIcon(cat){
   const c=CAT[cat];
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="36" height="46" viewBox="0 0 36 46">
@@ -393,11 +585,13 @@ function makeCatIcon(cat){
     {offset:new kakao.maps.Point(18,46)}
   );
 }
+ 
 function makeRouteIcon(n,bg,tc){
+  const fs=n>=10?10:13;
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34">
     <circle cx="17" cy="17" r="15" fill="${bg}" stroke="white" stroke-width="3"/>
     <text x="17" y="17" text-anchor="middle" dominant-baseline="central"
-      font-size="13" font-weight="bold" fill="${tc}" font-family="sans-serif">${n}</text>
+      font-size="${fs}" font-weight="bold" fill="${tc}" font-family="sans-serif">${n}</text>
   </svg>`;
   return new kakao.maps.MarkerImage(
     'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg),
@@ -405,25 +599,29 @@ function makeRouteIcon(n,bg,tc){
     {offset:new kakao.maps.Point(17,17)}
   );
 }
-
-/* ════ 6. INIT ════ */
+ 
+/* ════════════════════════════════════════
+   7. 초기화
+════════════════════════════════════════ */
 function initMap(){
   try{
     map=new kakao.maps.Map(document.getElementById('map'),{
       center:new kakao.maps.LatLng(34.75,127.35),
       level:10
     });
-    buildLegend();
+    buildCatLegend();
     drawCatMarkers();
   }catch(e){
-    console.error("카카오맵 로드 에러:", e);
+    console.error("카카오맵 에러:", e);
     const err=document.getElementById('err');
     err.style.display='flex';
     document.getElementById('cur-domain').textContent=location.origin;
   }
 }
-
-/* ════ 7. MARKERS ════ */
+ 
+/* ════════════════════════════════════════
+   8. 전체 추천 마커
+════════════════════════════════════════ */
 function drawCatMarkers(){
   Object.keys(CAT).forEach(cat=>{
     catLayers[cat]=[];
@@ -438,11 +636,13 @@ function drawCatMarkers(){
     });
   });
 }
-
+ 
+/* ════════════════════════════════════════
+   9. 유튜버 루트 마커 (수코·끼리·드봉)
+════════════════════════════════════════ */
 function drawRouteMarkers(rk){
   const route=ROUTES[rk];
   const coords=[];
-  routeMarkers=[];
   route.places.forEach(p=>{
     const pos=new kakao.maps.LatLng(p.lat,p.lng);
     const m=new kakao.maps.Marker({
@@ -454,35 +654,124 @@ function drawRouteMarkers(rk){
     routeMarkers.push(m);
     coords.push(pos);
   });
-  routePolyline=new kakao.maps.Polyline({
+  const pl=new kakao.maps.Polyline({
     path:coords,strokeWeight:3,strokeColor:route.color,
     strokeOpacity:0.65,strokeStyle:'shortdash'
   });
-  routePolyline.setMap(map);
+  pl.setMap(map);
+  routePolylines.push(pl);
   const bounds=new kakao.maps.LatLngBounds();
   coords.forEach(c=>bounds.extend(c));
   map.setBounds(bounds);
 }
-
-/* ════ 8. MODE SWITCH ════ */
+ 
+/* ════════════════════════════════════════
+   10. 쮸뀨미픽 루트 마커 (일차별 색상)
+════════════════════════════════════════ */
+function drawJjukuMarkers(){
+  const route=ROUTES.jjuku;
+ 
+  // 일차별 그룹핑
+  const byDay={1:[],2:[],3:[],4:[]};
+  route.places.forEach(p=>{ if(byDay[p.day]) byDay[p.day].push(p); });
+ 
+  // 일차별 마커 + 폴리라인
+  [1,2,3,4].forEach(day=>{
+    const col=JJUKU_DAY[day];
+    const places=byDay[day]||[];
+    const coords=[];
+    places.forEach(p=>{
+      const pos=new kakao.maps.LatLng(p.lat,p.lng);
+      const m=new kakao.maps.Marker({
+        position:pos,
+        image:makeRouteIcon(p.order,col.bg,col.tc)
+      });
+      kakao.maps.event.addListener(m,'click',()=>openPanel(p,'route','jjuku'));
+      m.setMap(map);
+      routeMarkers.push(m);
+      coords.push(pos);
+    });
+    if(coords.length>1){
+      const pl=new kakao.maps.Polyline({
+        path:coords,strokeWeight:4,strokeColor:col.bg,
+        strokeOpacity:0.85,strokeStyle:'solid'
+      });
+      pl.setMap(map);
+      routePolylines.push(pl);
+    }
+  });
+ 
+  // 일차 간 이동선 (회색 점선)
+  [1,2,3].forEach(d=>{
+    const from=byDay[d], to=byDay[d+1];
+    if(from&&to&&from.length&&to.length){
+      const last=from[from.length-1];
+      const first=to[0];
+      const pl=new kakao.maps.Polyline({
+        path:[
+          new kakao.maps.LatLng(last.lat,last.lng),
+          new kakao.maps.LatLng(first.lat,first.lng)
+        ],
+        strokeWeight:2,strokeColor:'#94A3B8',
+        strokeOpacity:0.55,strokeStyle:'dashed'
+      });
+      pl.setMap(map);
+      routePolylines.push(pl);
+    }
+  });
+ 
+  // 전체 범위 맞춤
+  const bounds=new kakao.maps.LatLngBounds();
+  route.places.forEach(p=>bounds.extend(new kakao.maps.LatLng(p.lat,p.lng)));
+  map.setBounds(bounds);
+}
+ 
+/* ════════════════════════════════════════
+   11. 모드 전환
+════════════════════════════════════════ */
 function switchMode(nm){
   if(mode===nm) return;
   mode=nm; closePanel();
+ 
+  // 기존 루트 정리
   routeMarkers.forEach(m=>m.setMap(null));
   routeMarkers=[];
-  if(routePolyline){routePolyline.setMap(null);routePolyline=null;}
+  routePolylines.forEach(p=>p.setMap(null));
+  routePolylines=[];
+ 
   const rb=document.getElementById('rb');
   const lg=document.getElementById('leg');
-  ['all','suko','kkiri','dubong'].forEach(k=>{
+ 
+  // 버튼 상태 업데이트
+  ['all','jjuku','suko','kkiri','dubong'].forEach(k=>{
     document.getElementById('btn-'+k).className='mbt '+(k===nm?'active-'+k:'inactive');
   });
+ 
   if(nm==='all'){
+    // ── 전체 추천 모드 ──
     Object.keys(CAT).forEach(c=>{
       catLayers[c]&&catLayers[c].forEach(m=>m.setMap(activeCats.has(c)?map:null));
     });
-    lg.style.display='block'; rb.style.display='none'; rb.className='';
+    buildCatLegend();
+    lg.style.display='block';
+    rb.style.display='none'; rb.className='';
     map.setCenter(new kakao.maps.LatLng(34.75,127.35)); map.setLevel(10);
+ 
+  } else if(nm==='jjuku'){
+    // ── 쮸뀨미픽 모드 ──
+    Object.keys(CAT).forEach(c=>{
+      catLayers[c]&&catLayers[c].forEach(m=>m.setMap(null));
+    });
+    rb.style.display='flex'; rb.className='jm';
+    const total=ROUTES.jjuku.places.length;
+    rb.innerHTML=`<span>💑 <strong>쮸뀨미픽</strong>의 보성·순천 3박4일 여행 루트 &nbsp;·&nbsp; 총 ${total}개 장소</span>
+      <span class="yl">🌿 May 22-25</span>`;
+    buildJjukuLegend();
+    lg.style.display='block';
+    drawJjukuMarkers();
+ 
   } else {
+    // ── 유튜버 루트 모드 ──
     Object.keys(CAT).forEach(c=>{
       catLayers[c]&&catLayers[c].forEach(m=>m.setMap(null));
     });
@@ -496,9 +785,11 @@ function switchMode(nm){
     drawRouteMarkers(nm);
   }
 }
-
-/* ════ 9. LEGEND ════ */
-function buildLegend(){
+ 
+/* ════════════════════════════════════════
+   12. 범례 빌더
+════════════════════════════════════════ */
+function buildCatLegend(){
   const el=document.getElementById('leg');
   let h='<div class="lt">카테고리</div>';
   Object.entries(CAT).forEach(([k,v])=>{
@@ -507,7 +798,24 @@ function buildLegend(){
   });
   el.innerHTML=h;
 }
+ 
+function buildJjukuLegend(){
+  const el=document.getElementById('leg');
+  let h='<div class="lt">여행 일차</div>';
+  Object.entries(JJUKU_DAY).forEach(([d,v])=>{
+    h+=`<div class="li-day">
+      <div class="ld-sq" style="background:${v.bg}"></div>
+      <span>${v.icon} ${v.label}</span>
+    </div>`;
+  });
+  h+=`<div class="day-conn">
+    <span>이동</span><div class="day-conn-line"></div><span>점선</span>
+  </div>`;
+  el.innerHTML=h;
+}
+ 
 function toggleCat(cat){
+  if(mode!=='all') return;
   const el=document.getElementById('li-'+cat);
   if(activeCats.has(cat)){
     activeCats.delete(cat);
@@ -515,21 +823,38 @@ function toggleCat(cat){
     el.classList.add('off');
   } else {
     activeCats.add(cat);
-    if(mode==='all') catLayers[cat]&&catLayers[cat].forEach(m=>m.setMap(map));
+    catLayers[cat]&&catLayers[cat].forEach(m=>m.setMap(map));
     el.classList.remove('off');
   }
 }
-
-/* ════ 10. PANEL ════ */
+ 
+/* ════════════════════════════════════════
+   13. 사이드 패널
+════════════════════════════════════════ */
 function openPanel(place,type,rk){
   const pn=document.getElementById('pn');
   let accent,badgeColor,badgeText,body;
+ 
   if(type==='cat'){
     const c=CAT[place.cat];
     accent=c.color; badgeColor=c.color; badgeText=c.name;
     body=`<div class="addr">📍 ${place.addr}</div>
       <div class="sec"><div class="stl">추천 이유</div><div class="stx">${place.reason}</div></div>
       <div class="sec"><div class="stl">꿀팁</div><div class="tip-card">${place.tip}</div></div>`;
+ 
+  } else if(rk==='jjuku'){
+    const dc=JJUKU_DAY[place.day]||{bg:'#E11D8C',tc:'#fff',label:'여행 일정',icon:'📅'};
+    accent=dc.bg; badgeColor=dc.bg;
+    badgeText=`${dc.icon} ${dc.label} · ${place.order}번째 장소`;
+    body=`<div class="addr">📍 ${place.addr}</div>
+      <div class="sec">
+        <div class="vc" style="background:${dc.bg}18;border-left-color:${dc.bg}">
+          <div class="vl" style="color:${dc.bg}">🗓 일정 정보</div>
+          <div class="vt">${place.video}</div>
+        </div>
+      </div>
+      <div class="sec"><div class="stl">꿀팁</div><div class="tip-card">${place.tip}</div></div>`;
+ 
   } else {
     const route=ROUTES[rk];
     accent=route.color; badgeColor=route.color;
@@ -540,6 +865,7 @@ function openPanel(place,type,rk){
       </div>
       <div class="sec"><div class="stl">꿀팁</div><div class="tip-card">${place.tip}</div></div>`;
   }
+ 
   pn.innerHTML=`
     <div class="pa" style="background:${accent}"></div>
     <div class="ph">
@@ -554,6 +880,7 @@ function openPanel(place,type,rk){
         🗺️&nbsp; 카카오맵으로 보기
       </button>
     </div>`;
+ 
   pn.classList.add('open');
   document.getElementById('bd').classList.add('show');
   if(window.innerWidth>768){
@@ -563,6 +890,7 @@ function openPanel(place,type,rk){
     map.panTo(new kakao.maps.LatLng(place.lat,place.lng));
   }
 }
+ 
 function closePanel(){
   document.getElementById('pn').classList.remove('open');
   document.getElementById('bd').classList.remove('show');
@@ -571,8 +899,10 @@ function closePanel(){
     setTimeout(()=>map.relayout(),360);
   }
 }
-
-/* ════ 11. KAKAO MAP LINK ════ */
+ 
+/* ════════════════════════════════════════
+   14. 카카오맵 링크
+════════════════════════════════════════ */
 function openKakao(lat,lng,name){
   const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   const web=`https://map.kakao.com/link/to/${encodeURIComponent(name)},${lat},${lng}`;
@@ -583,16 +913,16 @@ function openKakao(lat,lng,name){
     window.open(web,'_blank');
   }
 }
-
-/* ════ BOOT ════ */
+ 
+/* ════════════════════════════════════════
+   15. 부트
+════════════════════════════════════════ */
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();});
-
-/* 페이지 로드가 완료된 후 안전하게 카카오맵을 초기화합니다 */
-window.addEventListener('load', function() {
-  if (typeof kakao !== 'undefined' && kakao.maps) {
+ 
+window.addEventListener('load', function(){
+  if(typeof kakao!=='undefined'&&kakao.maps){
     kakao.maps.load(initMap);
   } else {
-    console.error("카카오맵 SDK를 로드하지 못했습니다. 네트워크 상태나 스크립트 URL을 확인하세요.");
     const err=document.getElementById('err');
     err.style.display='flex';
     document.getElementById('cur-domain').textContent=location.origin;
